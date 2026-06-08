@@ -1,0 +1,1679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finetune.ai — Learn to Sing with AI</title>
+  <meta name="description" content="The Duolingo of singing. Structured courses, real-time AI feedback, and daily practice that actually makes you better." />
+  <style>
+/* ── Reset & base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0a0a0f;
+  --bg-elevated: #12121a;
+  --bg-card: #16161f;
+  --border: rgba(255, 255, 255, 0.08);
+  --text: #f0f0f5;
+  --text-muted: #8b8b9e;
+  --accent: #a855f7;
+  --accent-light: #c084fc;
+  --accent-glow: rgba(168, 85, 247, 0.35);
+  --warm: #f59e0b;
+  --warm-glow: rgba(245, 158, 11, 0.25);
+  --success: #34d399;
+  --pitch: #a855f7;
+  --tone: #f59e0b;
+  --timing: #38bdf8;
+  --radius: 12px;
+  --radius-lg: 20px;
+  --font: 'DM Sans', system-ui, sans-serif;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+.container {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ── Typography ── */
+h1, h2, h3, h4 { line-height: 1.2; font-weight: 600; }
+
+h1 {
+  font-size: clamp(2.5rem, 5vw, 3.75rem);
+  letter-spacing: -0.03em;
+}
+
+h1 em {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--accent-light);
+}
+
+h2 {
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  letter-spacing: -0.02em;
+}
+
+h3 { font-size: 1.25rem; }
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-family: var(--font);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+}
+
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), #7c3aed);
+  color: #fff;
+  box-shadow: 0 4px 24px var(--accent-glow);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 6px 32px var(--accent-glow);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--text);
+  border: 1.5px solid var(--border);
+}
+
+.btn-outline:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.btn-ghost:hover { color: var(--text); }
+
+.btn-lg { padding: 14px 28px; font-size: 1rem; }
+.btn-sm { padding: 8px 16px; font-size: 0.85rem; }
+.btn-block { width: 100%; }
+
+/* ── Nav ── */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 16px 0;
+  background: rgba(10, 10, 15, 0.8);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-inner {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: var(--text);
+  font-weight: 700;
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+.logo-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--accent), #7c3aed);
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.logo-dot { color: var(--accent-light); }
+
+.nav-links {
+  display: flex;
+  gap: 28px;
+  flex: 1;
+}
+
+.nav-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.15s;
+}
+
+.nav-links a:hover { color: var(--text); }
+
+.nav-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.nav-toggle span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--text);
+  border-radius: 2px;
+}
+
+/* ── Hero ── */
+.hero {
+  position: relative;
+  padding: 140px 0 80px;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.hero-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+}
+
+.hero-orb-1 {
+  width: 500px;
+  height: 500px;
+  background: var(--accent-glow);
+  top: -100px;
+  right: -100px;
+  animation: float 8s ease-in-out infinite;
+}
+
+.hero-orb-2 {
+  width: 400px;
+  height: 400px;
+  background: var(--warm-glow);
+  bottom: 0;
+  left: -150px;
+  animation: float 10s ease-in-out infinite reverse;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(20px, -20px); }
+}
+
+.hero-waveform {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  opacity: 0.15;
+}
+
+.hero-waveform svg { width: 100%; height: 100%; }
+
+.wave {
+  fill: none;
+  stroke: var(--accent-light);
+  stroke-width: 2;
+}
+
+.wave-1 { animation: wave 3s ease-in-out infinite; }
+.wave-2 { animation: wave 3s ease-in-out infinite 0.5s; opacity: 0.5; }
+
+@keyframes wave {
+  0%, 100% { d: path("M0,40 Q50,10 100,40 T200,40 T300,40 T400,40"); }
+  50% { d: path("M0,40 Q50,70 100,40 T200,40 T300,40 T400,40"); }
+}
+
+.hero-content {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: rgba(168, 85, 247, 0.12);
+  border: 1px solid rgba(168, 85, 247, 0.25);
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--accent-light);
+  margin-bottom: 24px;
+}
+
+.hero-sub {
+  font-size: 1.15rem;
+  color: var(--text-muted);
+  margin: 20px 0 32px;
+  max-width: 480px;
+}
+
+.hero-cta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 48px;
+}
+
+.play-icon {
+  font-size: 0.7rem;
+}
+
+.hero-stats {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.stat strong {
+  display: block;
+  font-size: 1.25rem;
+  color: var(--text);
+}
+
+.stat span {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.stat-divider {
+  width: 1px;
+  height: 36px;
+  background: var(--border);
+}
+
+/* ── Phone mockup ── */
+.hero-visual {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.phone-mockup {
+  width: 280px;
+  background: #1a1a24;
+  border-radius: 36px;
+  padding: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 32px 64px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.phone-notch {
+  width: 80px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  margin: 4px auto 12px;
+}
+
+.phone-screen {
+  background: var(--bg);
+  border-radius: 28px;
+  padding: 16px;
+  min-height: 420px;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  font-size: 0.8rem;
+}
+
+.streak { color: var(--warm); font-weight: 600; }
+.xp {
+  background: rgba(168, 85, 247, 0.2);
+  color: var(--accent-light);
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.lesson-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+.lesson-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.lesson-card h3 {
+  font-size: 0.95rem;
+  margin: 4px 0 10px;
+}
+
+.progress-bar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-light));
+  border-radius: 999px;
+  animation: progress-pulse 2s ease-in-out infinite;
+}
+
+@keyframes progress-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.progress-text {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 6px;
+  display: block;
+}
+
+.ai-feedback {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.ai-avatar {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--accent), #7c3aed);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.ai-bubble {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px;
+  flex: 1;
+}
+
+.ai-bubble p {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.score-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.score-label {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  width: 36px;
+}
+
+.score-bar {
+  flex: 1;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.score-fill {
+  height: 100%;
+  border-radius: 999px;
+}
+
+.score-fill.pitch { background: var(--pitch); }
+.score-fill.tone { background: var(--tone); }
+.score-fill.timing { background: var(--timing); }
+
+.score-val {
+  font-size: 0.65rem;
+  font-weight: 600;
+  width: 20px;
+  text-align: right;
+}
+
+.app-btn {
+  width: 100%;
+  padding: 10px;
+  background: linear-gradient(135deg, var(--accent), #7c3aed);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  font-family: var(--font);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.floating-card {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  animation: float 4s ease-in-out infinite;
+}
+
+.floating-card span:first-child { font-size: 1.25rem; }
+.floating-card strong { display: block; font-size: 0.85rem; }
+.floating-card small { font-size: 0.7rem; color: var(--text-muted); }
+
+.card-notes {
+  top: 20px;
+  right: -30px;
+  animation-delay: 0.5s;
+}
+
+.card-level {
+  bottom: 60px;
+  left: -40px;
+  animation-delay: 1s;
+}
+
+/* ── Logos strip ── */
+.logos {
+  padding: 48px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.logos p {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+}
+
+.logo-row {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.logo-row span {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.25);
+  letter-spacing: 0.02em;
+}
+
+/* ── Sections ── */
+.section {
+  padding: 100px 0;
+}
+
+.section-header {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto 64px;
+}
+
+.section-tag {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent-light);
+  margin-bottom: 12px;
+}
+
+.section-header p {
+  color: var(--text-muted);
+  margin-top: 12px;
+  font-size: 1.05rem;
+}
+
+/* ── Steps ── */
+.steps {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  gap: 0;
+  align-items: start;
+}
+
+.step {
+  text-align: center;
+  padding: 0 16px;
+}
+
+.step-num {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+}
+
+.step-icon {
+  font-size: 2rem;
+  margin-bottom: 16px;
+}
+
+.step h3 { margin-bottom: 8px; }
+.step p { font-size: 0.9rem; color: var(--text-muted); }
+
+.step-connector {
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+  margin-top: 48px;
+  opacity: 0.4;
+}
+
+/* ── Features ── */
+.features { background: var(--bg-elevated); }
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.feature-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.feature-card:hover {
+  border-color: rgba(168, 85, 247, 0.3);
+  transform: translateY(-2px);
+}
+
+.feature-large {
+  grid-column: span 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  align-items: center;
+}
+
+.feature-icon {
+  font-size: 1.75rem;
+  margin-bottom: 16px;
+}
+
+.feature-card h3 { margin-bottom: 8px; }
+.feature-card p { font-size: 0.9rem; color: var(--text-muted); }
+
+.ai-visual {
+  position: relative;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.radar {
+  position: relative;
+  width: 140px;
+  height: 140px;
+}
+
+.radar-ring {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  border-radius: 50%;
+}
+
+.ring-2 { inset: 20px; }
+.ring-3 { inset: 40px; }
+
+.radar-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  background: var(--accent);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 20px var(--accent-glow);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 20px var(--accent-glow); }
+  50% { box-shadow: 0 0 40px var(--accent-glow); }
+}
+
+.metric-cards {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.metric {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.metric strong { color: var(--text); margin-left: 4px; }
+
+/* ── Courses ── */
+.course-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.course-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.course-card:hover {
+  transform: translateY(-2px);
+}
+
+.course-card.featured {
+  border-color: rgba(168, 85, 247, 0.4);
+  background: linear-gradient(180deg, rgba(168, 85, 247, 0.08) 0%, var(--bg-card) 40%);
+}
+
+.course-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-bottom: 16px;
+  width: fit-content;
+}
+
+.course-badge.beginner { background: rgba(52, 211, 153, 0.15); color: var(--success); }
+.course-badge.popular { background: rgba(168, 85, 247, 0.2); color: var(--accent-light); }
+.course-badge.advanced { background: rgba(245, 158, 11, 0.15); color: var(--warm); }
+
+.course-card h3 { margin-bottom: 8px; }
+.course-card > p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 16px; flex: 1; }
+
+.course-card ul {
+  list-style: none;
+  margin-bottom: 20px;
+}
+
+.course-card ul li {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  padding: 4px 0;
+  padding-left: 16px;
+  position: relative;
+}
+
+.course-card ul li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--accent-light);
+  font-size: 0.75rem;
+}
+
+.course-progress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.course-avatars {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.course-avatars span {
+  width: 24px;
+  height: 24px;
+  background: var(--bg-elevated);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  border: 1px solid var(--border);
+}
+
+.course-avatars small {
+  margin-left: 6px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* ── Testimonials ── */
+.testimonials {
+  padding: 80px 0;
+  background: var(--bg-elevated);
+}
+
+.testimonial-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.testimonial {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+}
+
+.testimonial p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  color: var(--text-muted);
+}
+
+.testimonial p em { color: var(--accent-light); font-style: normal; }
+
+.testimonial footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--accent), #7c3aed);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.testimonial footer strong { display: block; font-size: 0.9rem; }
+.testimonial footer span { font-size: 0.8rem; color: var(--text-muted); }
+
+/* ── Pricing ── */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.pricing-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  position: relative;
+}
+
+.pricing-card.featured {
+  border-color: rgba(168, 85, 247, 0.4);
+  background: linear-gradient(180deg, rgba(168, 85, 247, 0.1) 0%, var(--bg-card) 50%);
+  transform: scale(1.04);
+}
+
+.pricing-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, var(--accent), #7c3aed);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 4px 14px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.pricing-card h3 { margin-bottom: 8px; }
+
+.price {
+  margin-bottom: 12px;
+}
+
+.amount {
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.period {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.pricing-card > p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+
+.pricing-card ul {
+  list-style: none;
+  margin-bottom: 28px;
+}
+
+.pricing-card ul li {
+  font-size: 0.9rem;
+  padding: 6px 0;
+  padding-left: 22px;
+  position: relative;
+  color: var(--text-muted);
+}
+
+.pricing-card ul li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--success);
+  font-weight: 700;
+}
+
+/* ── CTA ── */
+.cta-section { padding: 80px 0 100px; }
+
+.cta-box {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(124, 58, 237, 0.08));
+  border: 1px solid rgba(168, 85, 247, 0.25);
+  border-radius: 24px;
+  padding: 64px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 40px;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.cta-content h2 { margin-bottom: 12px; }
+.cta-content > p { color: var(--text-muted); margin-bottom: 28px; max-width: 440px; }
+
+.waitlist-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.waitlist-form input {
+  flex: 1;
+  max-width: 300px;
+  padding: 12px 18px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.waitlist-form input:focus {
+  border-color: var(--accent);
+}
+
+.waitlist-form input::placeholder { color: var(--text-muted); }
+
+.cta-content small { font-size: 0.8rem; color: var(--text-muted); }
+
+.note-cluster {
+  display: flex;
+  gap: 16px;
+  font-size: 3rem;
+  opacity: 0.3;
+}
+
+.note {
+  animation: note-bounce 2s ease-in-out infinite;
+}
+
+.note:nth-child(2) { animation-delay: 0.3s; }
+.note:nth-child(3) { animation-delay: 0.6s; }
+.note:nth-child(4) { animation-delay: 0.9s; }
+
+@keyframes note-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+/* ── Footer ── */
+.footer {
+  padding: 64px 0 32px;
+  border-top: 1px solid var(--border);
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 48px;
+}
+
+.footer-brand p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-top: 12px;
+  max-width: 280px;
+}
+
+.footer-links h4 {
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+
+.footer-links a {
+  display: block;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+  padding: 4px 0;
+  transition: color 0.15s;
+}
+
+.footer-links a:hover { color: var(--text); }
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+.footer-bottom p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.social-links {
+  display: flex;
+  gap: 16px;
+}
+
+.social-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 1rem;
+  transition: color 0.15s;
+}
+
+.social-links a:hover { color: var(--text); }
+
+/* ── Toast ── */
+.toast {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--bg-card);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  color: var(--text);
+  padding: 14px 24px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  transition: transform 0.3s, opacity 0.3s;
+  z-index: 200;
+  pointer-events: none;
+}
+
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .hero-content { grid-template-columns: 1fr; text-align: center; }
+  .hero-sub { margin-left: auto; margin-right: auto; }
+  .hero-cta { justify-content: center; }
+  .hero-stats { justify-content: center; }
+  .hero-visual { margin-top: 40px; }
+  .feature-large { grid-column: span 1; grid-template-columns: 1fr; }
+  .feature-grid { grid-template-columns: 1fr 1fr; }
+  .steps { grid-template-columns: 1fr; gap: 40px; }
+  .step-connector { display: none; }
+  .course-grid, .pricing-grid, .testimonial-grid { grid-template-columns: 1fr; max-width: 440px; margin: 0 auto; }
+  .pricing-card.featured { transform: none; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .cta-box { grid-template-columns: 1fr; text-align: center; padding: 40px; }
+  .cta-content > p { margin-left: auto; margin-right: auto; }
+  .waitlist-form { justify-content: center; flex-wrap: wrap; }
+  .cta-visual { display: none; }
+}
+
+@media (max-width: 768px) {
+  .nav-links, .nav-actions { display: none; }
+  .nav-toggle { display: flex; margin-left: auto; }
+  .nav.open .nav-links {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bg);
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    gap: 16px;
+  }
+  .nav.open .nav-actions {
+    display: flex;
+    position: absolute;
+    top: calc(100% + 180px);
+    left: 24px;
+    right: 24px;
+  }
+  .feature-grid { grid-template-columns: 1fr; }
+  .floating-card { display: none; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .footer-bottom { flex-direction: column; gap: 16px; }
+}
+
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner container">
+      <a href="#" class="logo">
+        <span class="logo-icon" aria-hidden="true">♪</span>
+        Finetune<span class="logo-dot">.ai</span>
+      </a>
+      <div class="nav-links">
+        <a href="#how-it-works">How it works</a>
+        <a href="#features">Features</a>
+        <a href="#courses">Courses</a>
+        <a href="#pricing">Pricing</a>
+      </div>
+      <div class="nav-actions">
+        <button class="btn btn-ghost" type="button">Log in</button>
+        <button class="btn btn-primary" type="button">Start free</button>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-bg" aria-hidden="true">
+      <div class="hero-orb hero-orb-1"></div>
+      <div class="hero-orb hero-orb-2"></div>
+      <div class="hero-waveform">
+        <svg viewBox="0 0 400 80" preserveAspectRatio="none">
+          <path class="wave wave-1" d="M0,40 Q50,10 100,40 T200,40 T300,40 T400,40" />
+          <path class="wave wave-2" d="M0,40 Q50,70 100,40 T200,40 T300,40 T400,40" />
+        </svg>
+      </div>
+    </div>
+    <div class="container hero-content">
+      <div class="hero-text">
+        <div class="badge">🎤 Now in early access</div>
+        <h1>Learn to sing.<br /><em>One lesson at a time.</em></h1>
+        <p class="hero-sub">
+          Finetune.ai is the Duolingo of singing — bite-sized lessons, structured courses,
+          and an AI coach that listens, scores, and guides you in real time.
+        </p>
+        <div class="hero-cta">
+          <button class="btn btn-primary btn-lg" type="button">Start learning free</button>
+          <button class="btn btn-outline btn-lg" type="button">
+            <span class="play-icon" aria-hidden="true">▶</span>
+            Watch demo
+          </button>
+        </div>
+        <div class="hero-stats">
+          <div class="stat">
+            <strong>50K+</strong>
+            <span>lessons completed</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat">
+            <strong>4.9★</strong>
+            <span>avg. lesson rating</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat">
+            <strong>12 min</strong>
+            <span>avg. daily practice</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="phone-mockup">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="app-header">
+              <span class="streak">🔥 7 day streak</span>
+              <span class="xp">+25 XP</span>
+            </div>
+            <div class="lesson-card">
+              <span class="lesson-label">Today's lesson</span>
+              <h3>Breath control basics</h3>
+              <div class="progress-bar"><div class="progress-fill" style="width: 65%"></div></div>
+              <span class="progress-text">3 of 5 exercises</span>
+            </div>
+            <div class="ai-feedback">
+              <div class="ai-avatar">AI</div>
+              <div class="ai-bubble">
+                <p>Great pitch! Try holding the note 0.2s longer for a perfect score.</p>
+                <div class="score-row">
+                  <span class="score-label">Pitch</span>
+                  <div class="score-bar"><div class="score-fill pitch" style="width: 92%"></div></div>
+                  <span class="score-val">92</span>
+                </div>
+                <div class="score-row">
+                  <span class="score-label">Tone</span>
+                  <div class="score-bar"><div class="score-fill tone" style="width: 78%"></div></div>
+                  <span class="score-val">78</span>
+                </div>
+                <div class="score-row">
+                  <span class="score-label">Timing</span>
+                  <div class="score-bar"><div class="score-fill timing" style="width: 85%"></div></div>
+                  <span class="score-val">85</span>
+                </div>
+              </div>
+            </div>
+            <button class="app-btn" type="button">Continue lesson →</button>
+          </div>
+        </div>
+        <div class="floating-card card-notes">
+          <span>🎵</span>
+          <div>
+            <strong>Perfect pitch!</strong>
+            <small>+15 XP earned</small>
+          </div>
+        </div>
+        <div class="floating-card card-level">
+          <span>🏆</span>
+          <div>
+            <strong>Level 4</strong>
+            <small>Beginner vocalist</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="logos">
+    <div class="container">
+      <p>Built for singers who want real progress — not just karaoke</p>
+      <div class="logo-row">
+        <span>Beginners</span>
+        <span>Choir members</span>
+        <span>Content creators</span>
+        <span>Aspiring artists</span>
+        <span>Music teachers</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="how-it-works" class="section how-it-works">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">How it works</span>
+        <h2>Practice like a game.<br />Improve like a pro.</h2>
+        <p>Three steps between you and the voice you've always wanted.</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">01</div>
+          <div class="step-icon">📚</div>
+          <h3>Pick your course</h3>
+          <p>Choose a structured path — from absolute beginner to advanced technique. Every lesson builds on the last.</p>
+        </div>
+        <div class="step-connector" aria-hidden="true"></div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <div class="step-icon">🎙️</div>
+          <h3>Sing & get judged</h3>
+          <p>Record exercises right in the app. Our AI analyzes pitch, tone, breath support, and timing — instantly.</p>
+        </div>
+        <div class="step-connector" aria-hidden="true"></div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <div class="step-icon">📈</div>
+          <h3>Level up daily</h3>
+          <p>Earn XP, keep your streak alive, and unlock harder challenges. Consistency is the secret — we make it fun.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="features" class="section features">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Features</span>
+        <h2>Your personal AI vocal coach</h2>
+        <p>Everything Duolingo taught us about habit-building — applied to the art of singing.</p>
+      </div>
+      <div class="feature-grid">
+        <div class="feature-card feature-large">
+          <div class="feature-visual ai-visual">
+            <div class="radar">
+              <div class="radar-ring ring-1"></div>
+              <div class="radar-ring ring-2"></div>
+              <div class="radar-ring ring-3"></div>
+              <div class="radar-dot"></div>
+            </div>
+            <div class="metric-cards">
+              <div class="metric">Pitch accuracy <strong>94%</strong></div>
+              <div class="metric">Vibrato control <strong>Good</strong></div>
+              <div class="metric">Breath support <strong>Improving</strong></div>
+            </div>
+          </div>
+          <div class="feature-content">
+            <h3>Real-time AI judging</h3>
+            <p>Our model listens like a trained vocal coach — scoring pitch accuracy, tone quality, breath support, and rhythm. Get specific, actionable feedback after every take.</p>
+          </div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔥</div>
+          <h3>Streaks & XP</h3>
+          <p>Daily practice made addictive. Build habits with streaks, earn XP, and compete on leaderboards with friends.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🎯</div>
+          <h3>Adaptive difficulty</h3>
+          <p>Lessons adjust to your skill level. Struggling with a note? The AI slows down and gives you targeted drills.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3>Progress tracking</h3>
+          <p>See your vocal range expand, pitch accuracy improve, and practice time add up over weeks and months.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🎼</div>
+          <h3>Song library</h3>
+          <p>Apply what you learn to real songs. From pop hits to classical pieces — practice with backing tracks.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="courses" class="section courses">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Courses</span>
+        <h2>Structured paths for every voice</h2>
+        <p>Expert-designed curricula that take you from shower singer to stage-ready.</p>
+      </div>
+      <div class="course-grid">
+        <div class="course-card">
+          <div class="course-badge beginner">Beginner</div>
+          <h3>Foundations of Singing</h3>
+          <p>Posture, breathing, pitch matching, and your first full song.</p>
+          <ul>
+            <li>24 lessons · 4 weeks</li>
+            <li>No experience needed</li>
+          </ul>
+          <div class="course-progress">
+            <div class="course-avatars">
+              <span>👤</span><span>👤</span><span>👤</span>
+              <small>2.4k learners</small>
+            </div>
+            <button class="btn btn-outline btn-sm" type="button">Preview</button>
+          </div>
+        </div>
+        <div class="course-card featured">
+          <div class="course-badge popular">Most popular</div>
+          <h3>Pitch & Range Mastery</h3>
+          <p>Hit every note confidently. Expand your range and nail intervals.</p>
+          <ul>
+            <li>36 lessons · 6 weeks</li>
+            <li>Beginner friendly</li>
+          </ul>
+          <div class="course-progress">
+            <div class="course-avatars">
+              <span>👤</span><span>👤</span><span>👤</span>
+              <small>5.1k learners</small>
+            </div>
+            <button class="btn btn-primary btn-sm" type="button">Start course</button>
+          </div>
+        </div>
+        <div class="course-card">
+          <div class="course-badge advanced">Advanced</div>
+          <h3>Performance & Style</h3>
+          <p>Dynamics, vibrato, belting safely, and performing with confidence.</p>
+          <ul>
+            <li>30 lessons · 5 weeks</li>
+            <li>Intermediate level</li>
+          </ul>
+          <div class="course-progress">
+            <div class="course-avatars">
+              <span>👤</span><span>👤</span><span>👤</span>
+              <small>1.8k learners</small>
+            </div>
+            <button class="btn btn-outline btn-sm" type="button">Preview</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="testimonials">
+    <div class="container">
+      <div class="testimonial-grid">
+        <blockquote class="testimonial">
+          <p>"I've tried YouTube tutorials for years. Finetune is the first thing that actually told me <em>what</em> I was doing wrong — and how to fix it."</p>
+          <footer>
+            <div class="avatar">S</div>
+            <div>
+              <strong>Sarah M.</strong>
+              <span>Beginner · 45-day streak</span>
+            </div>
+          </footer>
+        </blockquote>
+        <blockquote class="testimonial">
+          <p>"The AI feedback is scary accurate. It's like having a vocal coach in my pocket for the price of a coffee."</p>
+          <footer>
+            <div class="avatar">J</div>
+            <div>
+              <strong>James K.</strong>
+              <span>Intermediate · Level 12</span>
+            </div>
+          </footer>
+        </blockquote>
+        <blockquote class="testimonial">
+          <p>"My students use Finetune between lessons. Their pitch accuracy improved noticeably in just three weeks."</p>
+          <footer>
+            <div class="avatar">L</div>
+            <div>
+              <strong>Lisa T.</strong>
+              <span>Vocal coach</span>
+            </div>
+          </footer>
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+  <section id="pricing" class="section pricing">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Pricing</span>
+        <h2>Start free. Upgrade when you're hooked.</h2>
+        <p>No credit card required. Cancel anytime.</p>
+      </div>
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <h3>Free</h3>
+          <div class="price"><span class="amount">$0</span><span class="period">/month</span></div>
+          <p>Perfect for trying Finetune and building a habit.</p>
+          <ul>
+            <li>1 course access</li>
+            <li>3 lessons per day</li>
+            <li>Basic AI feedback</li>
+            <li>Streak tracking</li>
+          </ul>
+          <button class="btn btn-outline btn-block" type="button">Get started</button>
+        </div>
+        <div class="pricing-card featured">
+          <div class="pricing-badge">Best value</div>
+          <h3>Pro</h3>
+          <div class="price"><span class="amount">$9.99</span><span class="period">/month</span></div>
+          <p>For serious singers who want unlimited growth.</p>
+          <ul>
+            <li>All courses unlocked</li>
+            <li>Unlimited lessons</li>
+            <li>Advanced AI analysis</li>
+            <li>Song library access</li>
+            <li>Progress reports</li>
+            <li>Offline mode</li>
+          </ul>
+          <button class="btn btn-primary btn-block" type="button">Start 7-day free trial</button>
+        </div>
+        <div class="pricing-card">
+          <h3>Family</h3>
+          <div class="price"><span class="amount">$14.99</span><span class="period">/month</span></div>
+          <p>Up to 5 accounts. Learn together.</p>
+          <ul>
+            <li>Everything in Pro</li>
+            <li>5 family members</li>
+            <li>Shared leaderboards</li>
+            <li>Parent progress view</li>
+          </ul>
+          <button class="btn btn-outline btn-block" type="button">Get started</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-box">
+        <div class="cta-content">
+          <h2>Your voice is waiting.<br />Start today.</h2>
+          <p>Join thousands of learners who are finally making real progress — one note at a time.</p>
+          <form class="waitlist-form" onsubmit="return false;">
+            <input type="email" placeholder="Enter your email" aria-label="Email address" />
+            <button class="btn btn-primary" type="submit">Join waitlist</button>
+          </form>
+          <small>No spam. Unsubscribe anytime.</small>
+        </div>
+        <div class="cta-visual" aria-hidden="true">
+          <div class="note-cluster">
+            <span class="note">♩</span>
+            <span class="note">♪</span>
+            <span class="note">♫</span>
+            <span class="note">♬</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="#" class="logo">
+            <span class="logo-icon" aria-hidden="true">♪</span>
+            Finetune<span class="logo-dot">.ai</span>
+          </a>
+          <p>The smartest way to learn singing. AI-powered courses for every skill level.</p>
+        </div>
+        <div class="footer-links">
+          <h4>Product</h4>
+          <a href="#">Features</a>
+          <a href="#">Courses</a>
+          <a href="#">Pricing</a>
+          <a href="#">For teachers</a>
+        </div>
+        <div class="footer-links">
+          <h4>Company</h4>
+          <a href="#">About</a>
+          <a href="#">Blog</a>
+          <a href="#">Careers</a>
+          <a href="#">Press</a>
+        </div>
+        <div class="footer-links">
+          <h4>Support</h4>
+          <a href="#">Help center</a>
+          <a href="#">Contact</a>
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 Finetune.ai. All rights reserved.</p>
+        <div class="social-links">
+          <a href="#" aria-label="Twitter">𝕏</a>
+          <a href="#" aria-label="Instagram">◎</a>
+          <a href="#" aria-label="YouTube">▶</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    Thanks! You're on the waitlist. 🎤
+  </div>
+
+  <script>
+document.querySelectorAll('.btn, .app-btn').forEach((btn) => {
+  btn.addEventListener('click', (e) => {
+    if (btn.closest('.waitlist-form')) return;
+    showToast(getMessage(btn));
+  });
+});
+
+document.querySelector('.waitlist-form')?.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const input = e.target.querySelector('input');
+  if (input?.value.trim()) {
+    showToast("Thanks! You're on the waitlist. 🎤");
+    input.value = '';
+  } else {
+    showToast('Please enter your email address.');
+  }
+});
+
+document.querySelector('.nav-toggle')?.addEventListener('click', () => {
+  document.querySelector('.nav').classList.toggle('open');
+});
+
+document.querySelectorAll('.nav-links a').forEach((link) => {
+  link.addEventListener('click', () => {
+    document.querySelector('.nav').classList.remove('open');
+  });
+});
+
+function getMessage(btn) {
+  const text = btn.textContent.trim().toLowerCase();
+  if (text.includes('log in')) return 'Login coming soon — join the waitlist!';
+  if (text.includes('demo') || text.includes('watch')) return 'Demo video coming soon!';
+  if (text.includes('preview')) return 'Course preview coming soon!';
+  if (text.includes('trial') || text.includes('start')) return 'Sign up opens at launch — join the waitlist!';
+  if (text.includes('continue')) return 'Complete lessons in the full app at launch!';
+  return 'Coming soon — join the waitlist below!';
+}
+
+function showToast(message) {
+  const toast = document.getElementById('toast');
+  if (!toast) return;
+  toast.textContent = message;
+  toast.classList.add('show');
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+const observer = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  },
+  { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+);
+
+document.querySelectorAll('.step, .feature-card, .course-card, .testimonial, .pricing-card').forEach((el) => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(24px)';
+  el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+  observer.observe(el);
+});
+
+  </script>
+</body>
+</html>
